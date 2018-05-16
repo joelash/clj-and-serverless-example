@@ -5,10 +5,9 @@
     [clojure.pprint :as pp]
     [clojure.string :as string])
   (:import
-    [com.amazonaws.services.lambda.runtime.events APIGatewayProxyResponseEvent]
-    [java.io ObjectOutputStream]))
+    [com.amazonaws.services.lambda.runtime.events APIGatewayProxyResponseEvent]))
 
-;; https://github.com/uswitch/lambada/blob/master/src/uswitch/lambada/core.clj
+;; Adapted from https://github.com/uswitch/lambada
 (defmacro defapigateway
   "Create a named class that can be invoked as a AWS Lambda function."
   [name args & body]
@@ -22,12 +21,13 @@
        (defn ~fn-name
          ~args
          (let [resp# (do ~@body)]
-           ;; TODO setHeaders
+           ;; TODO test setHeaders and how do i do a when or cond->
            (doto (APIGatewayProxyResponseEvent.)
              (.setStatusCode (int (:status resp#)))
-             (.setBody (json/write-str (:body resp#)))))))))
+             (.setBody (json/write-str (:body resp#)))
+             #_(.setHeaders (json/write-str (:headers resp#)))))))))
 
-(defapigateway foo2 [event]
+(defapigateway foo [event]
   (pp/pprint event)
   {:status 200
    :body {:hello :world3}})

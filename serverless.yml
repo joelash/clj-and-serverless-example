@@ -9,14 +9,14 @@ package:
 
 functions:
   hello:
-    handler: hello-joel.foo2::foo2
+    handler: hello-joel.foo::foo
     events:
       - http:
           path: /hello
           method: get
           cors: true
   hello2:
-    handler: hello_world::foo
+    handler: hello_world::foo2
     events:
       - http:
           path: /hello2

@@ -13,7 +13,7 @@
     (.setStatusCode (int status))
     (.setBody body)))
 
-(defn -foo [event]
+(defn -foo2 [event]
   (println "others")
   (pp/pprint event)
   (->response
