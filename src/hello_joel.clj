@@ -12,7 +12,6 @@
 (defmacro defapigateway
   "Create a named class that can be invoked as a AWS Lambda function."
   [name args & body]
-  ;; (assert (= (count args) 3) "lambda function must have exactly three args")
   (let [this-ns (ns-name *ns*)
         class-name (symbol (str this-ns "." name))
         fn-name (symbol (str "-" name))]
@@ -22,25 +21,13 @@
         :methods [^:static [~name [java.util.Map] com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent]])
        (defn ~fn-name
          ~args
-         ~@body))))
-
-(defn ^:private key->keyword [key-string]
-  (-> key-string
-      (string/replace #"([a-z])([A-Z])" "$1-$2")
-      (string/replace #"([A-Z]+)([A-Z])" "$1-$2")
-      string/lower-case
-      keyword))
-
-(defn ^:private in->event [in]
-  (with-open [reader (io/reader in)]
-    (json/read reader :key-fn key->keyword)))
-
-(defn ^:private ->response [{:keys [status body]}]
-  (doto (APIGatewayProxyResponseEvent.)
-    (.setStatusCode (int status))
-    (.setBody (json/write-str body))))
+         (let [resp# (do ~@body)]
+           ;; TODO setHeaders
+           (doto (APIGatewayProxyResponseEvent.)
+             (.setStatusCode (int (:status resp#)))
+             (.setBody (json/write-str (:body resp#)))))))))
 
 (defapigateway foo2 [event]
   (pp/pprint event)
-  (->response {:status 200
-               :body {:hello :world2}}))
+  {:status 200
+   :body {:hello :world3}})
