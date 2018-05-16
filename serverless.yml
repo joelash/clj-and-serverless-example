@@ -1,0 +1,24 @@
+service: hello-world-clj
+
+provider:
+  name: aws
+  runtime: java8
+
+package:
+  artifact: target/hello-world-0.1.0-SNAPSHOT-standalone.jar
+
+functions:
+  hello:
+    handler: hello_joel
+    events:
+      - http:
+          path: /hello
+          method: get
+          cors: true
+  hello2:
+    handler: hello_world::foo
+    events:
+      - http:
+          path: /hello2
+          method: get
+          cors: true
