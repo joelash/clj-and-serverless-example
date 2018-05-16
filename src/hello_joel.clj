@@ -12,16 +12,16 @@
 (defmacro defapigateway
   "Create a named class that can be invoked as a AWS Lambda function."
   [name args & body]
-  (assert (= (count args) 3) "lambda function must have exactly three args")
-  (let [prefix (gensym)
-        handleRequestMethod (symbol (str prefix "handleRequest"))]
+  ;; (assert (= (count args) 3) "lambda function must have exactly three args")
+  (let [this-ns (ns-name *ns*)
+        class-name (symbol (str this-ns "." name))
+        fn-name (symbol (str "-" name))]
     `(do
        (gen-class
-        :name ~name
-        :prefix ~prefix
-        :implements [com.amazonaws.services.lambda.runtime.RequestStreamHandler])
-       (defn ~handleRequestMethod
-         ~(into ['this] args)
+        :name ~class-name
+        :methods [^:static [~name [java.util.Map] com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent]])
+       (defn ~fn-name
+         ~args
          ~@body))))
 
 (defn ^:private key->keyword [key-string]
@@ -40,10 +40,7 @@
     (.setStatusCode (int status))
     (.setBody (json/write-str body))))
 
-(defapigateway hello-joel.foo2 [in out context]
-  (let [event (in->event in)]
-    (pp/pprint event)
-    (with-open [writer (ObjectOutputStream. out)]
-      (.writeObject writer
-                    (->response {:status 200
-                                 :body {:hello :world2}})))))
+(defapigateway foo2 [event]
+  (pp/pprint event)
+  (->response {:status 200
+               :body {:hello :world2}}))
