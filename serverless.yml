@@ -9,7 +9,7 @@ package:
 
 functions:
   hello:
-    handler: hello_joel
+    handler: hello-joel.foo2
     events:
       - http:
           path: /hello
