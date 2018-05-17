@@ -15,10 +15,3 @@ functions:
           path: /hello
           method: get
           cors: true
-  hello2:
-    handler: hello_world::foo2
-    events:
-      - http:
-          path: /hello2
-          method: get
-          cors: true
