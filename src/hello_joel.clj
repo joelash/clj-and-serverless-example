@@ -8,7 +8,7 @@
     [clojure.string :as string]))
 
 ;; Adapted from https://github.com/uswitch/lambada
-(defmacro defapigateway
+(defmacro defhandler-http
   "Create a named class that can be invoked as a AWS Lambda function."
   [name args & body]
   (assert (= 1 (count args)) "Invalid arity")
@@ -32,7 +32,7 @@
                                           (csk.extras/transform-keys csk/->HTTP-Header-Case-String)))
              :always (java.util.HashMap.)))))))
 
-(defapigateway foo [event]
+(defhandler-http foo [event]
   (pp/pprint event)
   {:status 200
    :body {:hello :world-joel-3}
